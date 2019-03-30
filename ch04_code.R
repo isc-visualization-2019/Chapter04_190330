@@ -24,6 +24,36 @@ df.1 %>%
           remove = TRUE)
 
 #------------------------------------------
+# str_* family
+# Character 벡터에 적용
+#------------------------------------------
+s.text <- c("부산시 동래구", "부산광역시 동래구", "부산광역시 동래구-", "부산광역시-동래구-", NA)
+
+# str_remove & str_remove_all
+str_remove(s.text, "-")
+str_remove_all(s.text, "-")
+
+# str_replace & str_replace_all
+str_replace(s.text, "부산시", "부산광역시")
+str_replace(s.text, "-", "=")
+str_replace_all(s.text, "-", "=")
+
+# str_replace_na
+str_replace_na(s.text, "없어져라!")
+
+# str_detect() -> TRUE or FALSE로 반환, filter에서 자주 활용
+str_detect(s.text, "부산")
+str_detect(s.text, "부산광역시")
+
+# str_locate & str_locate_all
+str_locate(s.text, " ")
+str_locate_all(s.text, " ")
+
+# str_extract & str_extract_all
+str_extract(s.text, "동래구")
+str_extract_all(s.text, "-")
+
+#------------------------------------------
 # count
 #------------------------------------------
 sample_df %>% 
@@ -93,13 +123,13 @@ sample_df %>%
 # dplyr에서 mutate
 #------------------------------------------
 sample_df %>% 
-    mutate(message = paste0(school_name, "의 순유입은 ", value, "명 입니다")) %>% View()
+    mutate(message = str_c(school_name, "의 순유입은 ", value, "명 입니다")) %>% View()
 
 sample_df %>% 
     mutate(avg = round((value / sum(value))*100, 2))
 
 sample_df %>% 
-    mutate(avg = paste0(round((value / sum(value))*100, 2), "%"))
+    mutate(avg = str_c(round((value / sum(value))*100, 2), "%"))
 
 #------------------------------------------
 # dplyr에서 group_by & summarise
