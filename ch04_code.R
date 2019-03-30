@@ -24,10 +24,11 @@ df.1 %>%
           remove = TRUE)
 
 #------------------------------------------
-# str_* family
+# str_* family (stringr)
 # Character 벡터에 적용
 #------------------------------------------
 s.text <- c("부산시 동래구", "부산광역시 동래구", "부산광역시 동래구-", "부산광역시-동래구-", NA)
+s.text
 
 # str_remove & str_remove_all
 str_remove(s.text, "-")
@@ -42,7 +43,7 @@ str_replace_all(s.text, "-", "=")
 str_replace_na(s.text, "없어져라!")
 
 # str_detect() -> TRUE or FALSE로 반환, filter에서 자주 활용
-str_detect(s.text, "부산")
+str_detect(s.text, "부산시")
 str_detect(s.text, "부산광역시")
 
 # str_locate & str_locate_all
@@ -51,13 +52,15 @@ str_locate_all(s.text, " ")
 
 # str_extract & str_extract_all
 str_extract(s.text, "동래구")
+str_extract(c("1050명(15%)", "500명(5%)"), "\\(.+\\)")
 str_extract_all(s.text, "-")
 
+#str_trim()
 #------------------------------------------
 # count
 #------------------------------------------
 sample_df %>% 
-    count(category)
+    count(category) 
 
 sample_df %>% 
     count(category, public)
@@ -100,12 +103,16 @@ sample_df2 %>%
 #------------------------------------------
 public <- sample_df %>% 
     filter(category == "강남권" & public == "공립")
+View(public)
 
 sample_df %>% distinct(gu) %>% pull # pull은 벡터로 빼주는 파이프 기능
 
 # gu칼럼 안에 벡터들
 public_gangnam <- public %>%
     filter(gu %in% c("서울특별시 송파구", "서울특별시 강남구", "서울특별시 서초구"))
+
+sample_df %>% 
+    filter(str_detect(gu, "송파구"))
 
 #------------------------------------------
 # dplyr에서 arrange
@@ -123,7 +130,8 @@ sample_df %>%
 # dplyr에서 mutate
 #------------------------------------------
 sample_df %>% 
-    mutate(message = str_c(school_name, "의 순유입은 ", value, "명 입니다")) %>% View()
+    mutate(message = str_c(school_name, "의 순유입은 ", value, "명 입니다"),
+           value2 = value * 100 - 5) %>% View()
 
 sample_df %>% 
     mutate(avg = round((value / sum(value))*100, 2))
@@ -136,7 +144,7 @@ sample_df %>%
 #------------------------------------------
 sample_df %>%
     group_by(category) %>% 
-    summarise(total = sum(value))
+    summarise(total = mean(value))
 
 sample_df %>% 
     group_by(category) %>% 
@@ -161,3 +169,19 @@ sample_df %>%
 #      "꽃받침 너비는 00입니다"라고 새롭게 만들어주세요
 #   5. Species별 Sepal.Width의 평균값을 만들어보세요
 #----------------------------------------------------------------------
+
+df_Sepal <- iris %>% 
+    select(contains("Sepal"))
+
+iris %>%
+    filter(Sepal.Length >= 1.5 & Petal.Length >= 1.5)
+
+iris %>%
+    arrange(desc(Species), desc(Petal.Width))
+
+iris %>% 
+    mutate(text = str_c("꽃받침 너비는 ", Sepal.Width, "입니다"))
+
+iris %>%
+    group_by(Species) %>% 
+    summarise(means = mean(Sepal.Width, na.rm = T))
