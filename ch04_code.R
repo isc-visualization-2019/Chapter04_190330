@@ -2,13 +2,15 @@
 library(tidyverse)
 
 # read_csv
-sample_df <- read_csv("data/csv1.csv")
+sample_df <- read_csv("data/sample1.csv")
 colnames(sample_df)[1] <- "no"
 glimpse(sample_df)
 
-#------------------------------------------
+#------------------------------------------------------------------
 # seperate & unite
-#------------------------------------------
+# 열(column)안에 문자열 중 특정 문자로 열을 나눔 = seperate
+# 2개 이상의 열을 하나로 합치는 기능 = unite
+#------------------------------------------------------------------
 df.1 <- sample_df %>% 
     separate(col = gu, 
              into = c("주소구분1", "주소구분2"),
@@ -44,6 +46,24 @@ sample_df <- sample_df %>%
     select(-no, -code)
 head(sample_df)
 
+# 응용해서 써보자
+# 2019 고위공직자 재산공개 샘플데이터
+sample_df2 <- read_csv("data/sample2.csv")
+glimpse(sample_df2)
+
+# 만약에 2018년도에 해당하는 열만 추출하고 싶다면?
+# dplyr::contains()를 활용해보자
+# starts_with(), ends_with(), matches(), num_range(), 
+
+# 칼럼명에 2018이 들어가는 열만 추출
+sample_df2 %>% 
+    select(contains("2018"))
+
+# 칼럼명이 val로 시작하는 열만 추출
+sample_df2 %>% 
+    select(starts_with("val_"))
+
+
 #------------------------------------------
 # dplyr에서 filter
 # 강남권에서 공립 중학교만 추출
@@ -51,9 +71,11 @@ head(sample_df)
 public <- sample_df %>% 
     filter(category == "강남권" & public == "공립")
 
+sample_df %>% distinct(gu) %>% pull # pull은 벡터로 빼주는 파이프 기능
+
+# gu칼럼 안에 벡터들
 public_gangnam <- public %>%
     filter(gu %in% c("서울특별시 송파구", "서울특별시 강남구", "서울특별시 서초구"))
-head(public_gangnam)
 
 #------------------------------------------
 # dplyr에서 arrange
